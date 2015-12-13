@@ -16,7 +16,7 @@
     <button name="lookup_extension"><a href="lookup_extension.php">Vypis vsech klapek</a></button>
     <button name="delete_extension"><a href="delete_extension.php">Smazat klapku</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
-    <button name="home"><a href="index.php">Home</a></button>
+    <button name="home"><a href="index.php">Domu</a></button>
 </div>
 
 
