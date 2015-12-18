@@ -11,6 +11,7 @@
     <button name="lookup_extension"><a href="ext_lookup.php">Vypis vsech klapek</a></button>
     <button name="lookup_numbers"><a href="number_lookup.php">Vypis vsech cisel</a></button>
     <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
+    <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
 </div>
 </body>

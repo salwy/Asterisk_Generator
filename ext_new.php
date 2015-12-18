@@ -7,7 +7,7 @@
  */
 ?>
 <html>
-<title>Asterisk Generato</title>
+<title>Asterisk Generator</title>
 
 <body>
 <h1 align="center">Generator pro Asterisk</h1>
@@ -48,6 +48,7 @@ if (empty ($conn)) {
 
                     <p><label for="number">Telefonni cislo: </label>
                         <select name="number" id="number">
+                            <option value=""></option>
                             <?php
                             $sql_number = $conn->query("SELECT number FROM numbers WHERE in_use='0'");
                             while ($row = $sql_number->fetch_row()) {

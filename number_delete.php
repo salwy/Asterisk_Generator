@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: David
  * Date: 11. 12. 2015
- * Time: 20:31
+ * Time: 21:01
  */
 ?>
 <html>
@@ -30,21 +30,27 @@ $database = "asterisk";
 
 $conn = new mysqli($server, $username, $password, $database);
 
-$ext = mysqli_real_escape_string($conn, $_POST['ext']);
-$pass = mysqli_real_escape_string($conn, $_POST['pass']);
-$ip = mysqli_real_escape_string($conn, $_POST['ip']);
-$number = mysqli_real_escape_string($conn, $_POST['number']);
-
-$sql_number_id = $conn->query("SELECT id FROM numbers WHERE number=$number");
-$sql_number_id = $sql_number_id->fetch_row();
-$sql_ext = "INSERT INTO sip (ext, secret, ip, number_id) VALUES ('$ext', '$pass', '$ip', '$sql_number_id[0]')";
-$sql_number = "UPDATE numbers SET in_use=1 WHERE number=$number";
-
-if (mysqli_query($conn, $sql_ext) && mysqli_query($conn, $sql_number)) {
-    echo "<div align='center' style='top: 100px; position: relative'>Klapka <b>$ext</b> s heslem $pass, povolenim na techto IP adresach: $ip a cislem $number byla uspesne zalozena</div>";
-} else {
-    echo "Error: " . mysqli_error($conn);
+if (empty ($conn)) {
+    die("Not connected: " . mysqli_connect_error());
 }
+?>
+<div align="center" style="top: 100px; position: relative;">
+    <form action="number_delete_done.php" method="post">
+        <p><label for="number">Cislo: </label>
+            <select name="number" id="number">
+                <?php
+                $sql_number = $conn->query("SELECT number FROM numbers");
+                while ($row_number = $sql_number->fetch_row()) {
+                    print "<option value=$row_number[0]>" . $row_number[0] . "</option>";
+                }
+                $sql_number->free();
+                ?>
+            </select></p>
+
+        <p><input type="submit" name="submit" id="submit"></p>
+    </form>
+</div>
+<?php
 $conn->close();
 ?>
 </body>

@@ -7,7 +7,7 @@
  */
 ?>
 <html>
-<title>Asterisk Generato</title>
+<title>Asterisk Generator</title>
 
 <body>
 <h1 align="center">Generator pro Asterisk</h1>
@@ -33,12 +33,18 @@ $conn = new mysqli($server, $username, $password, $database);
 $ext = mysqli_real_escape_string($conn, $_POST['ext']);
 $pass = mysqli_real_escape_string($conn, $_POST['pass']);
 $ip = mysqli_real_escape_string($conn, $_POST['ip']);
+$number = mysqli_real_escape_string($conn, $_POST['number']);
 
-$sql = "UPDATE sip SET secret='$pass', ip='$ip' WHERE ext=$ext";
-if (mysqli_query($conn, $sql)) {
+$sql_number = $conn->query("SELECT id FROM numbers WHERE number=$number");
+$id = $sql_number->fetch_row();
+$sql_number->free();
+$sql_ext = "UPDATE sip SET secret='$pass', ip='$ip', number_id=$id[0] WHERE ext=$ext";
+$sql_in_use = "UPDATE numbers SET in_use=1 WHERE id=$id[0]";
+
+if (mysqli_query($conn, $sql_ext) && mysqli_query($conn, $sql_in_use))   {
     echo "Klapka <b>$ext</b> s heslem $pass a povolenim na techto IP adresach: $ip byla uspesne upravena";
 } else {
-    echo "Error $sql. " . mysqli_error($conn);
+    echo "Error $sql_ext. " . mysqli_error($conn);
 }
 $conn->close();
 ?>

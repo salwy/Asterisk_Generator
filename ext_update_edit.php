@@ -40,6 +40,13 @@ $sql_secret->free();
 $sql_ip = $conn->query("SELECT ip FROM sip WHERE ext=$ext");
 $ip = $sql_ip->fetch_row();
 $sql_ip->free();
+$sql_number_id = $conn->query("SELECT number_id FROM sip WHERE ext=$ext");
+$number_id = $sql_number_id->fetch_row();
+$sql_number_id->free();
+$sql_number = $conn->query("SELECT number FROM numbers WHERE id=$number_id[0]");
+$number = $sql_number->fetch_row();
+$sql_number->free();
+$sql_number_all = $conn->query("SELECT number FROM numbers WHERE in_use=0");
 ?>
 <div align="center" style="top: 100px; position: relative;">
     <form action="ext_update_done.php" method="post">
@@ -51,6 +58,18 @@ $sql_ip->free();
 
         <p>IP adresa: <label for="ip"></label><input name="ip" type="text" id="ip" required="required"
                                                      value="<?php print $ip[0]; ?>"></p>
+
+        <p><label for="number">Telefonni cislo: </label>
+            <select name="number" id="number">
+                <option value="<?php$number[0]?>"><?php print $number[0]; ?></option>
+                <option value=""></option>
+                <?php
+                while ($row = $sql_number_all->fetch_row()) {
+                    print "<option value=$row[0]>" . $row[0] . "</option>";
+                }
+                $sql_number_all->free();
+                ?>
+            </select></p>
 
         <p><input type="submit" name="add" id="add"></p>
     </form>
