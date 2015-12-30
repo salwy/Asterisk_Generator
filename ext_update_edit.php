@@ -19,7 +19,9 @@
     <button name="lookup_extension"><a href="ext_lookup.php">Vypis vsech klapek</a></button>
     <button name="lookup_numbers"><a href="number_lookup.php">Vypis vsech cisel</a></button>
     <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
+    <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
+    <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 
 <?php
@@ -61,7 +63,7 @@ $sql_number_all = $conn->query("SELECT number FROM numbers WHERE in_use=0");
 
         <p><label for="number">Telefonni cislo: </label>
             <select name="number" id="number">
-                <option value="<?php$number[0]?>"><?php print $number[0]; ?></option>
+                <option value="<?php $number[0] ?>"><?php print $number[0]; ?></option>
                 <option value=""></option>
                 <?php
                 while ($row = $sql_number_all->fetch_row()) {

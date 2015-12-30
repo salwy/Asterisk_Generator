@@ -19,7 +19,9 @@
     <button name="lookup_extension"><a href="ext_lookup.php">Vypis vsech klapek</a></button>
     <button name="lookup_numbers"><a href="number_lookup.php">Vypis vsech cisel</a></button>
     <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
+    <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
+    <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 
 <?php
@@ -34,13 +36,14 @@ if (empty ($conn)) {
     die("Not connected: " . mysqli_connect_error());
 }
 $number = $_POST['number'];
-$sql_id = $conn -> query("SELECT id FROM numbers WHERE number=$number");
+$sql_id = $conn->query("SELECT id FROM numbers WHERE number=$number");
 $sql_id = $sql_id->fetch_row();
 $sql_number = "DELETE FROM numbers WHERE number=$number";
-$sql_in_use = "UPDATE sip SET number_id=0 WHERE number_id=$sql_id[0]";
+$sql_inuse = "UPDATE sip SET number_id=0 WHERE number_id=$sql_id[0]";
+$sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
+$sql_log_inuse = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_inuse')";
 
-if ($conn->query($sql_number) === TRUE) {
-    mysqli_query($conn, $sql_in_use);
+if (mysqli_query($conn, $sql_number) && mysqli_query($conn, $sql_inuse) && mysqli_query($conn, $sql_log_number) && mysqli_query($conn, $sql_log_inuse)) {
     echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Uspesne smazano</div>";
 } else {
     echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Chyba: " . $conn->error . "</div>";

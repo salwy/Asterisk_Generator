@@ -19,7 +19,9 @@
     <button name="lookup_extension"><a href="ext_lookup.php">Vypis vsech klapek</a></button>
     <button name="lookup_numbers"><a href="number_lookup.php">Vypis vsech cisel</a></button>
     <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
+    <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
+    <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 <?php
 
@@ -32,9 +34,11 @@ $conn = new mysqli($server, $username, $password, $database);
 
 $number = mysqli_real_escape_string($conn, $_POST['number']);
 
-$sql_number = "INSERT INTO numbers (number, in_use) VALUES ('$number', '0')";
+$sql_number = "INSERT INTO numbers (number, in_use) VALUES ($number, 0)";
+$sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
 
-if (mysqli_query($conn, $sql_number)) {
+
+if (mysqli_query($conn, $sql_number) && mysqli_query($conn, $sql_log_number)) {
     echo "<div align='center' style='top: 100px; position: relative'>Tel. cislo <b>$number</b> bylo uspesne zalozeno</div>";
 } else {
     echo "Error: " . mysqli_error($conn);

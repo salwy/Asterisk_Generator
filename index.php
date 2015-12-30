@@ -13,6 +13,7 @@
     <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
     <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
+    <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 </body>
 </html>

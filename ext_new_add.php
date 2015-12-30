@@ -19,7 +19,9 @@
     <button name="lookup_extension"><a href="ext_lookup.php">Vypis vsech klapek</a></button>
     <button name="lookup_numbers"><a href="number_lookup.php">Vypis vsech cisel</a></button>
     <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
+    <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
+    <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 
 <?php
@@ -37,10 +39,12 @@ $number = mysqli_real_escape_string($conn, $_POST['number']);
 
 $sql_number_id = $conn->query("SELECT id FROM numbers WHERE number=$number");
 $sql_number_id = $sql_number_id->fetch_row();
-$sql_ext = "INSERT INTO sip (ext, secret, ip, number_id) VALUES ('$ext', '$pass', '$ip', '$sql_number_id[0]')";
+$sql_ext = "INSERT INTO sip (ext, secret, ip, number_id) VALUES ('$ext', '$pass', '$ip', $sql_number_id[0])";
 $sql_number = "UPDATE numbers SET in_use=1 WHERE number=$number";
+$sql_log_ext = "INSERT INTO logs (user, command) VALUES ('$username', 'INSERT INTO sip (ext, secret, ip, number_id) VALUES ($ext, $pass, $ip, $sql_number_id[0])')";
+$sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
 
-if (mysqli_query($conn, $sql_ext) && mysqli_query($conn, $sql_number)) {
+if (mysqli_query($conn, $sql_ext) && mysqli_query($conn, $sql_number) && mysqli_query($conn, $sql_log_ext) && mysqli_query($conn, $sql_log_number)) {
     echo "<div align='center' style='top: 100px; position: relative'>Klapka <b>$ext</b> s heslem $pass, povolenim na techto IP adresach: $ip a cislem $number byla uspesne zalozena</div>";
 } else {
     echo "Error: " . mysqli_error($conn);
