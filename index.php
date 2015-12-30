@@ -15,5 +15,6 @@
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
+<div align="center"><h1>Welcome to Asterisk Generator BETA</h1></div>
 </body>
 </html>
