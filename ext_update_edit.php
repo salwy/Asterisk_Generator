@@ -5,6 +5,15 @@
  * Date: 11. 12. 2015
  * Time: 23:12
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
+$username = $_SESSION['login_user'];
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -25,55 +34,74 @@
 </div>
 
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
 
-$conn = new mysqli($server, $username, $password, $database);
-
-if (empty ($conn)) {
-    die("Not connected: " . mysqli_connect_error());
+$ext = (int)$_POST['ext'];
+$sql_secret = "SELECT secret FROM sip WHERE ext=$ext";
+$secret = db_select($sql_secret);
+foreach ($secret as $secret) {
+    $secret = $secret['secret'];
 }
-$ext = $_POST['ext'];
-$sql_secret = $conn->query("SELECT secret FROM sip WHERE ext=$ext");
-$secret = $sql_secret->fetch_row();
-$sql_secret->free();
-$sql_ip = $conn->query("SELECT ip FROM sip WHERE ext=$ext");
-$ip = $sql_ip->fetch_row();
-$sql_ip->free();
-$sql_number_id = $conn->query("SELECT number_id FROM sip WHERE ext=$ext");
-$number_id = $sql_number_id->fetch_row();
-$sql_number_id->free();
-$sql_number = $conn->query("SELECT number FROM numbers WHERE id=$number_id[0]");
-$number = $sql_number->fetch_row();
-$sql_number->free();
-$sql_number_all = $conn->query("SELECT number FROM numbers WHERE in_use=0");
+$sql_ip = "SELECT ip FROM sip WHERE ext=$ext";
+$ip = db_select($sql_ip);
+foreach ($ip as $ip) {
+    $ip = $ip['ip'];
+}
+$sql_number_id = "SELECT number_id FROM sip WHERE ext=$ext";
+$number_id = db_select($sql_number_id);
+foreach ($number_id as $number_id) {
+    $number_id = $number_id['number_id'];
+}
+if (intval($number_id) > 0) {
+    $sql_number = "SELECT number FROM numbers WHERE id=$number_id";
+    $number = db_select($sql_number);
+    foreach ($number as $number) {
+        $number = $number['number'];
+    }
+} else {
+    $number = "None";
+
+}
+$sql_number_all = "SELECT number FROM numbers WHERE in_use=0";
+$numbers_all = db_select($sql_number_all);
 ?>
-<div align="center" style="top: 100px; position: relative;">
-    <form action="ext_update_done.php" method="post">
-        <p><label for="ext">Klapka: </label><input name="ext" type="text" id="ext"
-                                                   value="<?php echo $ext; ?>" readonly></p>
+<div align="center"
+     style="top: 100px; position: relative;">
+    <form action="ext_update_done.php"
+          method="post">
+        <p><label for="ext">Klapka: </label><input name="ext"
+                                                   type="text"
+                                                   id="ext"
+                                                   value="<?php echo $ext; ?>"
+                                                   readonly></p>
 
-        <p>Heslo: <label for="pass"></label><input name="pass" type="text" id="pass" required="required"
-                                                   pattern=".{8,}" value="<?php print $secret[0]; ?>"></p>
+        <p>Heslo: <label for="pass"></label><input name="pass"
+                                                   type="text"
+                                                   id="pass"
+                                                   required="required"
+                                                   pattern=".{8,}"
+                                                   value="<?php print $secret; ?>"></p>
 
-        <p>IP adresa: <label for="ip"></label><input name="ip" type="text" id="ip" required="required"
-                                                     value="<?php print $ip[0]; ?>"></p>
+        <p>IP adresa: <label for="ip"></label><input name="ip"
+                                                     type="text"
+                                                     id="ip"
+                                                     required="required"
+                                                     value="<?php print $ip; ?>"></p>
 
         <p><label for="number">Telefonni cislo: </label>
-            <select name="number" id="number">
-                <option value="<?php $number[0] ?>"><?php print $number[0]; ?></option>
+            <select name="number"
+                    id="number">
+                <option value="<?php print $number ?>"><?php print $number; ?></option>
                 <option value=""></option>
                 <?php
-                while ($row = $sql_number_all->fetch_row()) {
-                    print "<option value=$row[0]>" . $row[0] . "</option>";
+                foreach ($numbers_all as $numbers_all) {
+                    print "<option value=" . $numbers_all['number'] . ">" . $numbers_all['number'] . "</option>";
                 }
-                $sql_number_all->free();
                 ?>
             </select></p>
 
-        <p><input type="submit" name="add" id="add"></p>
+        <p><input type="submit"
+                  name="add"
+                  id="add"></p>
     </form>
 </div>
 </body>

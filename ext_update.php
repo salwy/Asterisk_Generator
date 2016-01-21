@@ -5,6 +5,14 @@
  * Date: 11. 12. 2015
  * Time: 21:01
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -24,36 +32,26 @@
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 
-<?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
-
-$conn = new mysqli($server, $username, $password, $database);
-
-if (empty ($conn)) {
-    die("Not connected: " . mysqli_connect_error());
-}
-?>
-<div align="center" style="top: 100px; position: relative;">
-    <form action="ext_update_edit.php" method="post">
+<div align="center"
+     style="top: 100px; position: relative;">
+    <form action="ext_update_edit.php"
+          method="post">
         <p><label for="ext">Klapka: </label>
-            <select name="ext" id="ext">
+            <select name="ext"
+                    id="ext">
                 <?php
-                $sql_ext = $conn->query("SELECT ext FROM sip");
-                while ($row_ext = $sql_ext->fetch_row()) {
-                    print "<option value=$row_ext[0]>" . $row_ext[0] . "</option>";
+                $sql_ext = "SELECT ext FROM sip";
+                $exts = db_query($sql_ext);
+                foreach ($exts as $ext) {
+                    print "<option value=" . $ext['ext'] . ">" . $ext['ext'] . "</option>";
                 }
-                $sql_ext->free();
                 ?>
             </select></p>
 
-        <p><input type="submit" name="submit" id="submit"></p>
+        <p><input type="submit"
+                  name="submit"
+                  id="submit"></p>
     </form>
 </div>
-<?php
-$conn->close();
-?>
 </body>
 </html>

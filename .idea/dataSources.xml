@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="2388256808">
-    <data-source source="LOCAL" name="MySQL - asterisk@localhost" uuid="ff57c1a5-8cd6-4185-929d-a7b538e5ab31">
+  <component name="DataSourceManagerImpl" format="xml" hash="4099774876">
+    <data-source source="LOCAL" name="MySQL - asterisk@localhost" uuid="8bd32313-f19d-41d1-9d48-423b7070cc82">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
+      <auto-commit>false</auto-commit>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/asterisk</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:8889/asterisk</jdbc-url>
       <driver-properties>
         <property name="zeroDateTimeBehavior" value="convertToNull" />
         <property name="tinyInt1isBit" value="false" />

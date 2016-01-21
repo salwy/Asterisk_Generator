@@ -5,6 +5,15 @@
  * Date: 11. 12. 2015
  * Time: 21:01
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
+$username = $_SESSION['login_user'];
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -25,30 +34,25 @@
 </div>
 
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
+$number_id = "";
+$ext = (int)db_escape($_POST['ext']);
 
-$conn = new mysqli($server, $username, $password, $database);
-
-if (empty ($conn)) {
-    die("Not connected: " . mysqli_connect_error());
+$sql_number_ids = "SELECT number_id FROM sip WHERE ext=$ext";
+$number_ids = db_select($sql_number_ids);
+foreach ($number_ids as $number_id) {
+    $number_id = $number_id['number_id'];
 }
-$ext = $_POST['ext'];
-$sql_numberid = $conn->query("SELECT number_id FROM sip WHERE ext=$ext");
-$sql_numberid = $sql_numberid->fetch_row();
+
 $sql_delete = "DELETE FROM sip WHERE ext=$ext";
-$sql_number = "UPDATE numbers SET in_use=0 WHERE id=$sql_numberid[0]";
+$sql_number = "UPDATE numbers SET in_use=0 WHERE id=$number_id";
 $sql_log_delete = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_delete')";
 $sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
 
-if ($conn->query($sql_delete) && $conn->query($sql_number)&& $conn->query($sql_log_delete) && $conn->query($sql_log_number)) {
-    echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Uspesne smazano</div>";
+if ((db_query($sql_delete) && db_query($sql_number) && db_query($sql_log_delete) && db_query($sql_log_number)) == false) {
+    echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Error: " . db_error() . "</div>";
 } else {
-    echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Chyba: " . $conn->error . "</div>";
+    echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Uspesne smazano</div>";
 }
-$conn->close();
 ?>
 </body>
 </html>

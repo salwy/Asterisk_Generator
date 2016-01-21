@@ -5,6 +5,15 @@
  * Date: 11. 12. 2015
  * Time: 20:31
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
+$username = $_SESSION['login_user'];
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -25,31 +34,27 @@
 </div>
 
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
+$id = "";
+$ext = (int)db_escape($_POST['ext']);
+$pass = db_escape($_POST['pass']);
+$ip = db_escape($_POST['ip']);
+$number = (int)db_escape($_POST['number']);
 
-$conn = new mysqli($server, $username, $password, $database);
-
-$ext = mysqli_real_escape_string($conn, $_POST['ext']);
-$pass = mysqli_real_escape_string($conn, $_POST['pass']);
-$ip = mysqli_real_escape_string($conn, $_POST['ip']);
-$number = mysqli_real_escape_string($conn, $_POST['number']);
-
-$sql_number = $conn->query("SELECT id FROM numbers WHERE number=$number");
-$id = $sql_number->fetch_row();
-$sql_ext = "UPDATE sip SET secret='$pass', ip='$ip', number_id='$id[0]' WHERE ext='$ext'";
-$sql_inuse = "UPDATE numbers SET in_use=1 WHERE id=$id[0]";
-$sql_log_ext = "INSERT INTO logs (user, command) VALUES ('$username', 'UPDATE sip SET secret=$pass, ip=$ip, number_id=$id[0] WHERE ext=$ext')";
-$sql_log_inuse = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_inuse')";
-
-if (mysqli_query($conn, $sql_ext) && mysqli_query($conn, $sql_inuse) && mysqli_query($conn, $sql_log_ext) && mysqli_query($conn, $sql_log_inuse))   {
-    echo "<div align='center' style='top: 100px; position: relative'>Klapka <b>$ext</b> s heslem $pass a povolenim na techto IP adresach: $ip byla uspesne upravena</div>";
-} else {
-    echo "Error $sql_ext. " . mysqli_error($conn);
+$sql_ids = "SELECT id FROM numbers WHERE number=$number";
+$ids = db_select($sql_ids);
+foreach ($ids as $id) {
+    $id = $id['id'];
 }
-$conn->close();
+$sql_ext = "UPDATE sip SET secret='$pass', ip='$ip', number_id='$id' WHERE ext='$ext'";
+$sql_in_use = "UPDATE numbers SET in_use=1 WHERE id=$id";
+$sql_log_ext = "INSERT INTO logs (user, command) VALUES ('$username', 'UPDATE sip SET secret=$pass, ip=$ip, number_id=$id WHERE ext=$ext')";
+$sql_log_in_use = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_in_use')";
+
+if ((db_query($sql_ext) && db_query($sql_in_use) && db_query($sql_log_ext) && db_query($sql_log_in_use)) == false) {
+    echo "Error $sql_ext. " . db_error();
+} else {
+    echo "<div align='center' style='top: 100px; position: relative'>Klapka <b>$ext</b> s heslem $pass a povolenim na techto IP adresach: $ip byla uspesne upravena</div>";
+}
 ?>
 </body>
 </html>

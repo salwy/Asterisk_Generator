@@ -1,20 +1,37 @@
+<?php
+include('Configs/login.php');
+
+if (isset($_SESSION['login_user'])) {
+    header("location: homepage.php");
+}
+?>
+<!DOCTYPE html>
 <html>
-<title>Asterisk Generator Home</title>
-
+<head>
+    <title>Login Form in PHP with Session</title>
+</head>
+<link rel="stylesheet"
+      href="Configs/style.css">
 <body>
-<h1 align="center">Generator pro Asterisk</h1>
-
-<div align="center">
-    <button name="new_extension"><a href="ext_new.php">Nova klapka</a></button>
-    <button name="new_number"><a href="number_new.php">Nove cislo</a></button>
-    <button name="update_extension"><a href="ext_update.php">Uprava klapky</a></button>
-    <button name="lookup_extension"><a href="ext_lookup.php">Vypis vsech klapek</a></button>
-    <button name="lookup_numbers"><a href="number_lookup.php">Vypis vsech cisel</a></button>
-    <button name="delete_extension"><a href="ext_delete.php">Smazat klapku</a></button>
-    <button name="delete_number"><a href="number_delete.php">Smazat cislo</a></button>
-    <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
-    <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
+<div id="login">
+    <form action=""
+          method="post">
+        <label>UserName :</label>
+        <input id="name"
+               name="username"
+               placeholder="username"
+               type="text">
+        <label>Password :</label>
+        <input id="password"
+               name="password"
+               placeholder="**********"
+               type="password">
+        <input name="submit"
+               type="submit"
+               value=" Login ">
+        <span><?php echo $error; ?></span>
+    </form>
 </div>
-<div align="center"><h1>Welcome to Asterisk Generator BETA</h1></div>
+
 </body>
 </html>

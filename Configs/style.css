@@ -1,0 +1,13 @@
+span {
+    color: red
+}
+
+body {
+    background-color: grey;
+    color: lime;
+}
+
+#logged {
+    position: absolute;
+    float: right;
+}

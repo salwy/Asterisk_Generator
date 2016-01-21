@@ -5,6 +5,14 @@
  * Date: 12. 12. 2015
  * Time: 0:19
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -23,14 +31,7 @@
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
-
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
-
-$conn = new mysqli($server, $username, $password, $database);
 
 $sql_ext = $conn->query("SELECT ext FROM sip");
 $sql_secret = $conn->query("SELECT secret FROM sip");

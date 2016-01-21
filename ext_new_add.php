@@ -5,6 +5,15 @@
  * Date: 11. 12. 2015
  * Time: 20:31
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
+$username = $_SESSION['login_user'];
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -25,31 +34,30 @@
 </div>
 
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
 
-$conn = new mysqli($server, $username, $password, $database);
+$number_id = "";
+$ext = (int)db_escape($_POST['ext']);
+$pass = db_escape($_POST['pass']);
+$ip = db_escape($_POST['ip']);
+$number = (int)db_escape($_POST['number']);
 
-$ext = mysqli_real_escape_string($conn, $_POST['ext']);
-$pass = mysqli_real_escape_string($conn, $_POST['pass']);
-$ip = mysqli_real_escape_string($conn, $_POST['ip']);
-$number = mysqli_real_escape_string($conn, $_POST['number']);
+$sql_number_ids = "SELECT id FROM numbers WHERE number=$number";
+$number_ids = db_select($sql_number_ids);
+foreach ($number_ids as $number_id) {
+    $number_id = $number_id['id'];
+}
 
-$sql_number_id = $conn->query("SELECT id FROM numbers WHERE number=$number");
-$sql_number_id = $sql_number_id->fetch_row();
-$sql_ext = "INSERT INTO sip (ext, secret, ip, number_id) VALUES ('$ext', '$pass', '$ip', $sql_number_id[0])";
+$sql_ext = "INSERT INTO sip (ext, secret, ip, number_id) VALUES ('$ext', '$pass', '$ip', $number_id)";
 $sql_number = "UPDATE numbers SET in_use=1 WHERE number=$number";
-$sql_log_ext = "INSERT INTO logs (user, command) VALUES ('$username', 'INSERT INTO sip (ext, secret, ip, number_id) VALUES ($ext, $pass, $ip, $sql_number_id[0])')";
+$sql_log_ext = "INSERT INTO logs (user, command) VALUES ('$username', 'INSERT INTO sip (ext, secret, ip, number_id) VALUES ($ext, $pass, $ip, $number_id)')";
 $sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
 
-if (mysqli_query($conn, $sql_ext) && mysqli_query($conn, $sql_number) && mysqli_query($conn, $sql_log_ext) && mysqli_query($conn, $sql_log_number)) {
-    echo "<div align='center' style='top: 100px; position: relative'>Klapka <b>$ext</b> s heslem $pass, povolenim na techto IP adresach: $ip a cislem $number byla uspesne zalozena</div>";
+
+if ((db_query($sql_ext) && db_query($sql_number) && db_query($sql_log_ext) && db_query($sql_log_number)) == false) {
+    echo "Error: " . db_error();
 } else {
-    echo "Error: " . mysqli_error($conn);
+    echo "<div align='center' style='top: 100px; position: relative'>Klapka <b>$ext</b> s heslem $pass, povolenim na techto IP adresach: $ip a cislem $number byla uspesne zalozena</div>";
 }
-$conn->close();
 ?>
 </body>
 </html>

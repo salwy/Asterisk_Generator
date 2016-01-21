@@ -5,6 +5,15 @@
  * Date: 11. 12. 2015
  * Time: 21:01
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
+$username = $_SESSION['login_user'];
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -23,33 +32,24 @@
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
-
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
+$number = (int)db_escape($_POST['number']);
 
-$conn = new mysqli($server, $username, $password, $database);
-
-if (empty ($conn)) {
-    die("Not connected: " . mysqli_connect_error());
+$sql_id = "SELECT id FROM numbers WHERE number=$number";
+$ids = db_select($sql_id);
+foreach($ids as $id){
+    $id = $id['id'];
 }
-$number = $_POST['number'];
-$sql_id = $conn->query("SELECT id FROM numbers WHERE number=$number");
-$sql_id = $sql_id->fetch_row();
 $sql_number = "DELETE FROM numbers WHERE number=$number";
-$sql_inuse = "UPDATE sip SET number_id=0 WHERE number_id=$sql_id[0]";
+$sql_in_use = "UPDATE sip SET number_id=0 WHERE number_id=$id";
 $sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
-$sql_log_inuse = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_inuse')";
+$sql_log_in_use = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_in_use')";
 
-if (mysqli_query($conn, $sql_number) && mysqli_query($conn, $sql_inuse) && mysqli_query($conn, $sql_log_number) && mysqli_query($conn, $sql_log_inuse)) {
+if ((db_query($sql_number) && db_query($sql_in_use) && db_query($sql_log_number) && db_query($sql_log_in_use)) == true) {
     echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Uspesne smazano</div>";
 } else {
-    echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Chyba: " . $conn->error . "</div>";
+    echo "<div align=\"center\" style=\"top: 100px; position: relative;\">Chyba: " . db_error() . "</div>";
 }
-
-$conn->close();
 ?>
 </body>
 </html>

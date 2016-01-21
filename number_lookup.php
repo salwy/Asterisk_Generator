@@ -5,6 +5,14 @@
  * Date: 12. 12. 2015
  * Time: 0:19
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -24,15 +32,9 @@
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 <?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
 
-$conn = new mysqli($server, $username, $password, $database);
-
-$sql_id = $conn->query("SELECT id FROM numbers");
-$sql_number = $conn->query("SELECT number FROM numbers");
+$sql_id = "SELECT id FROM numbers";
+$sql_number = "SELECT number FROM numbers";
 
 ?>
 <div align="center" style="top: 100px; position: relative">

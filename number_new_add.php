@@ -5,6 +5,15 @@
  * Date: 11. 12. 2015
  * Time: 20:31
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
+$username = $_SESSION['login_user'];
 ?>
 <html>
 <title>Asterisk Generator</title>
@@ -24,26 +33,17 @@
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 <?php
-
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
-
-$conn = new mysqli($server, $username, $password, $database);
-
-$number = mysqli_real_escape_string($conn, $_POST['number']);
+$number = (int)db_escape($_POST['number']);
 
 $sql_number = "INSERT INTO numbers (number, in_use) VALUES ($number, 0)";
 $sql_log_number = "INSERT INTO logs (user, command) VALUES ('$username', '$sql_number')";
 
 
-if (mysqli_query($conn, $sql_number) && mysqli_query($conn, $sql_log_number)) {
+if ((db_query($sql_number) && db_query($sql_log_number)) == true) {
     echo "<div align='center' style='top: 100px; position: relative'>Tel. cislo <b>$number</b> bylo uspesne zalozeno</div>";
 } else {
-    echo "Error: " . mysqli_error($conn);
+    echo "Error: " . db_error();
 }
-$conn->close();
 ?>
 </body>
 </html>
