@@ -9,8 +9,8 @@
 require_once('Configs/db_connect.php');
 
 session_start();
-if(isset($_SESSION['login_user'])){}
-else {
+if (isset($_SESSION['login_user'])) {
+} else {
     header("location: index.php");
 }
 ?>

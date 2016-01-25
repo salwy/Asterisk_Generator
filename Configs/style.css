@@ -1,13 +1,53 @@
+h1 {
+    text-align: center;
+}
+
 span {
     color: red
 }
 
 body {
-    background-color: grey;
+    background-color: #9f9ea6;
     color: lime;
+    margin: 0;
+    padding: 0;
+}
+
+#h1 {
+    position: relative;
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+    top: 7%;
+}
+
+#menu {
+    position: relative;
+    margin: auto;
+    width: 55%;
+    padding: 10px;
+    top: 5%;
+}
+
+#select_box {
+    position: relative;
+    margin: auto;
+    width: 10%;
+    padding: 10px;
+    top: 8%;
+}
+
+#lookup {
+    position: relative;
+    margin: auto;
+    width: 45%;
+    padding: 5px;
+    top: 7%;
 }
 
 #logged {
-    position: absolute;
+    position: relative;
     float: right;
+    top: 3%;
+    left: -2%;
 }

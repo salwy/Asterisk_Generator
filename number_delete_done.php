@@ -37,7 +37,7 @@ $number = (int)db_escape($_POST['number']);
 
 $sql_id = "SELECT id FROM numbers WHERE number=$number";
 $ids = db_select($sql_id);
-foreach($ids as $id){
+foreach ($ids as $id) {
     $id = $id['id'];
 }
 $sql_number = "DELETE FROM numbers WHERE number=$number";

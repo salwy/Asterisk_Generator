@@ -5,14 +5,26 @@
  * Date: 12. 12. 2015
  * Time: 13:21
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
 ?>
 <html>
 <title>Asterisk Generator</title>
-
+<link rel="stylesheet"
+      href="Configs/style.css">
 <body>
-<h1 align="center">Generator pro Asterisk</h1>
-
-<div align="center">
+<div id="logged">Logged in as:<span> <?php echo $_SESSION['login_user'] ?> </span>
+    <button name="logout"><a href="Configs/logout.php">Logout</a></button>
+</div>
+<div id="h1"><h1>Welcome <?php echo $_SESSION['login_user'] ?> to Asterisk Generator pre-Alpha</h1></div>
+<div id="menu">
+    <button name="homapage"><a href="index.php">Homepage</a></button>
     <button name="new_extension"><a href="ext_new.php">Nova klapka</a></button>
     <button name="new_number"><a href="number_new.php">Nove cislo</a></button>
     <button name="update_extension"><a href="ext_update.php">Uprava klapky</a></button>
@@ -24,31 +36,20 @@
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 <?php
-
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
-
-$conn = new mysqli($server, $username, $password, $database);
-
-if (empty ($conn)) {
-    die("Not connected: " . mysqli_connect_error());
-}
-$file = 'C:\xampp\htdocs\Asterisk_Generator\Asterisk Config\sip_channels.conf';
+$file = $_SERVER['DOCUMENT_ROOT'] . '/Asterisk_Generator/Asterisk Config/sip_channels.conf';
 $sip = fopen("$file", "w") or die("Nepodarilo se otevrit soubor");
 
-$sql_ext = $conn->query("SELECT ext FROM sip");
-$sql_secret = $conn->query("SELECT secret FROM sip");
-$sql_permit = $conn->query("SELECT ip FROM sip");
+$sql = "SELECT ext, secret, ip FROM sip";
+$ext_all = db_select($sql);
 
-while ($txt_ext = $sql_ext->fetch_row()) {
-    $txt_ext_1 = "[$txt_ext[0]]\n";
+foreach ($ext_all as $ext) {
+    $ext_1 = $ext['ext'];
+    $txt_ext_1 = "[$ext_1]\n";
     fwrite($sip, $txt_ext_1);
     $txt_deny = "deny=0.0.0.0/0.0.0.0\n";
     fwrite($sip, $txt_deny);
-    $txt_secret = $sql_secret->fetch_row();
-    $txt_secret = "secret=$txt_secret[0]\n";
+    $txt_secret = $ext['secret'];
+    $txt_secret = "secret=$txt_secret\n";
     fwrite($sip, $txt_secret);
     $txt_dtfmode = "dtfmode=rfc2833\n";
     fwrite($sip, $txt_dtfmode);
@@ -70,14 +71,14 @@ while ($txt_ext = $sql_ext->fetch_row()) {
     fwrite($sip, $txt_callgroup);
     $txt_pickupgroup = "pickupgroup=\n";
     fwrite($sip, $txt_pickupgroup);
-    $txt_dial = "dial=SIP/$txt_ext[0]\n";
+    $txt_dial = "dial=SIP/$ext_1\n";
     fwrite($sip, $txt_dial);
-    $txt_mailbox = "mailbox=$txt_ext[0]@device\n";
+    $txt_mailbox = "mailbox=$ext_1@device\n";
     fwrite($sip, $txt_mailbox);
-    $txt_permit = $sql_permit->fetch_row();
-    $txt_permit = "permit=$txt_permit[0]/255.255.255.0\n";
+    $txt_permit = $ext['ip'];
+    $txt_permit = "permit=$txt_permit/255.255.255.0\n";
     fwrite($sip, $txt_permit);
-    $txt_callerid = "callerid=device <$txt_ext[0]>\n";
+    $txt_callerid = "callerid=device <$ext_1>\n";
     fwrite($sip, $txt_callerid);
     $txt_callcounter = "callcounter=yes\n";
     fwrite($sip, $txt_callcounter);
@@ -86,13 +87,9 @@ while ($txt_ext = $sql_ext->fetch_row()) {
     $txt_space = "\n\n";
     fwrite($sip, $txt_space);
 }
-fclose($sip);
-$sql_ext->free();
-$sql_secret->free();
-$sql_permit->free();
-$conn->close();
 ?>
-<div align="center" style="position: relative; top: 100px;">
+<div align="center"
+     style="position: relative; top: 100px;">
     <?php
     $open = fopen("$file", "r");
     if ($open) {

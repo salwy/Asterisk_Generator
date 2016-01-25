@@ -2,17 +2,29 @@
 /**
  * Created by PhpStorm.
  * User: David
- * Date: 29. 12. 2015
- * Time: 16:58
+ * Date: 11. 12. 2015
+ * Time: 21:01
  */
+
+require_once('Configs/db_connect.php');
+
+session_start();
+if (isset($_SESSION['login_user'])) {
+} else {
+    header("location: index.php");
+}
 ?>
 <html>
 <title>Asterisk Generator</title>
-
+<link rel="stylesheet"
+      href="Configs/style.css">
 <body>
-<h1 align="center">Generator pro Asterisk</h1>
-
-<div align="center">
+<div id="logged">Logged in as:<span> <?php echo $_SESSION['login_user'] ?> </span>
+    <button name="logout"><a href="Configs/logout.php">Logout</a></button>
+</div>
+<div id="h1"><h1>Welcome <?php echo $_SESSION['login_user'] ?> to Asterisk Generator pre-Alpha</h1></div>
+<div id="menu">
+    <button name="homapage"><a href="index.php">Homepage</a></button>
     <button name="new_extension"><a href="ext_new.php">Nova klapka</a></button>
     <button name="new_number"><a href="number_new.php">Nove cislo</a></button>
     <button name="update_extension"><a href="ext_update.php">Uprava klapky</a></button>
@@ -24,17 +36,7 @@
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
 
-<?php
-$server = "localhost";
-$username = "root";
-$password = "";
-$database = "asterisk";
-
-$conn = new mysqli($server, $username, $password, $database);
-?>
-
-<div align="center">
-    <h3>Vypis logu</h3>
+<div id="lookup">
     <table border="1">
         <tr>
             <td>ID</td>
@@ -42,9 +44,10 @@ $conn = new mysqli($server, $username, $password, $database);
             <td>User</td>
             <td>Command</td>
         </tr><?php
-        $sql_log = $conn->query("SELECT * FROM logs");
-        while ($log = $sql_log->fetch_row()) {
-            print "<tr><td>$log[0]</td>" . "<td>$log[1]</td>" . "<td>$log[2]</td>" . "<td>$log[3]</td></tr>";
+        $sql_log = "SELECT * FROM logs";
+        $log = db_select($sql_log);
+        foreach ($log as $row) {
+            print "<tr><td>" . $row['id'] . "</td>" . "<td>" . $row['time'] . "</td>" . "<td>" . $row['user'] . "</td>" . "<td>" . $row['command'] . "</td></tr>";
         }
         ?>
     </table>

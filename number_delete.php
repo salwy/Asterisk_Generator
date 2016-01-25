@@ -31,20 +31,25 @@ if (isset($_SESSION['login_user'])) {
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
-<div align="center" style="top: 100px; position: relative;">
-    <form action="number_delete_done.php" method="post">
+<div align="center"
+     style="top: 100px; position: relative;">
+    <form action="number_delete_done.php"
+          method="post">
         <p><label for="number">Cislo: </label>
-            <select name="number" id="number">
+            <select name="number"
+                    id="number">
                 <?php
                 $sql_number = "SELECT number FROM numbers";
                 $numbers = db_select($sql_number);
-                foreach($numbers as $number){
+                foreach ($numbers as $number) {
                     print "<option value=" . $number['number'] . ">" . $number['number'] . "</option>";
                 }
                 ?>
             </select></p>
 
-        <p><input type="submit" name="submit" id="submit"></p>
+        <p><input type="submit"
+                  name="submit"
+                  id="submit"></p>
     </form>
 </div>
 </body>

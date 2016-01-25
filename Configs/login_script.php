@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
         $rows = mysqli_num_rows($query);
         if ($rows == 1) {
             $_SESSION['login_user']=$username;
-            header("location: /www/Asterisk_Generator/homepage.php");
+            header("location: /www/Asterisk_Generator/index.php");
         } else {
             $error = "Username or Password is invalid";
         }
