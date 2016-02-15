@@ -19,7 +19,7 @@ if (isset($_POST['submit'])) {
 
         $query = db_query("select * from users where secret='$password' AND user='$username'");
         $rows = mysqli_num_rows($query);
-        if ($rows == 1) {
+        if ($rows == 0) {
             $_SESSION['login_user']=$username;
             header("location: /www/Asterisk_Generator/index.php");
         } else {

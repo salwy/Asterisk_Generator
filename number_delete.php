@@ -16,11 +16,15 @@ if (isset($_SESSION['login_user'])) {
 ?>
 <html>
 <title>Asterisk Generator</title>
-
+<link rel="stylesheet"
+      href="Configs/style.css">
 <body>
-<h1 align="center">Generator pro Asterisk</h1>
-
-<div align="center">
+<div id="logged">Logged in as:<span> <?php echo $_SESSION['login_user'] ?> </span>
+    <button name="logout"><a href="Configs/logout.php">Logout</a></button>
+</div>
+<div id="h1"><h1>Welcome <?php echo $_SESSION['login_user'] ?> to Asterisk Generator pre-Alpha</h1></div>
+<div id="menu">
+    <button name="homapage"><a href="index.php">Homepage</a></button>
     <button name="new_extension"><a href="ext_new.php">Nova klapka</a></button>
     <button name="new_number"><a href="number_new.php">Nove cislo</a></button>
     <button name="update_extension"><a href="ext_update.php">Uprava klapky</a></button>
@@ -31,8 +35,8 @@ if (isset($_SESSION['login_user'])) {
     <button name="file_generate_new"><a href="file_generate_new.php">Vygenerovat novy SIP.conf</a></button>
     <button name="log_lookup"><a href="log_lookup.php">Vypsat log</a></button>
 </div>
-<div align="center"
-     style="top: 100px; position: relative;">
+
+<div id="select_box">
     <form action="number_delete_done.php"
           method="post">
         <p><label for="number">Cislo: </label>
