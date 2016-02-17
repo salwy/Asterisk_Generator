@@ -16,6 +16,9 @@ if (isset($_SESSION['login_user'])) {
 ?>
 <html>
 <title>Asterisk Generator</title>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
 <link rel="stylesheet"
       href="Configs/style.css">
 <body>
@@ -37,18 +40,77 @@ if (isset($_SESSION['login_user'])) {
 </div>
 
 <?php
-
-$sql_lookup = "SELECT sip.id, sip.ext, sip.secret, sip.number_id, numbers.number FROM sip LEFT OUTER JOIN numbers ON sip.number_id=numbers.id ORDER BY sip.id";
+$input_number = 1;
+$sql_lookup = "SELECT sip.id, sip.ext, sip.secret, sip.ip, sip.number_id, numbers.number FROM sip LEFT OUTER JOIN numbers ON sip.number_id=numbers.id ORDER BY sip.id";
 $lookup_all = db_select($sql_lookup);
-?>
+echo '
 <div id="lookup">
-    <table border="1">
-        <?php
-        foreach ($lookup_all as $lookup) {
-            print "<tr><td height='40' width='50' align='center'>" . $lookup['id'] . "</td><td width='200' align='center'>" . $lookup['ext'] . "</td><td width='200' align='center'>" . $lookup['secret'] . "</td><td width='300' align='center'>" . $lookup['number'] . "</td></tr>";
-        }
-        ?>
-    </table>
-</div>
+    <table border="1">';
+foreach ($lookup_all as $lookup) {
+    echo '<script>
+$(function () {
+    $("input[id=\'edit' . $input_number . '\']").click(function (e) {
+        e.preventDefault();
+        var id = $("#id' . $input_number . '").val();
+        var ext = $("#ext' . $input_number . '").val();
+        var secret = $("#secret' . $input_number . '").val();
+        var ip = $("#ip' . $input_number . '").val();
+        var number = $("#number' . $input_number . '").val();
+        var number_original = $("#number_original' . $input_number . '").val();
+        $.post("Configs/submit.php", {
+            id: id,
+            ext: ext,
+            secret: secret,
+            ip: ip,
+            number: number,
+            number_original: number_original,
+            action: "edit"
+        }, function (edit) {
+
+            $("#editing").html(edit);
+        });
+    });
+    $("input[id=\'delete' . $input_number . '\']").click(function (e) {
+        e.preventDefault();
+        var id = $("#id' . $input_number . '").val();
+        var ext = $("#ext' . $input_number . '").val();
+        var number_original = $("#number_original' . $input_number . '").val();
+        $.post("Configs/submit.php", {
+            id: id,
+            ext: ext,
+            number_original: number_original,
+            action: "delete"
+        }, function (edit) {
+
+            $("#editing").html(edit);
+        });
+    })
+})
+</script>
+';
+    echo "<form method='post' action='Configs/submit.php' id='form_number" . $input_number . "'><tr>
+    <td height='40' width='50' align='center'><input type='text' size='3' required='required' id='id" . $input_number . "' name='id' value=" . $lookup['id'] . " readonly='readonly'></td>
+    <td width='200' align='center'><input type='text' size='4' required='required' id='ext" . $input_number . "' name='ext' value=" . $lookup['ext'] . " readonly='readonly'></td>
+    <td width='200' align='center'><input type='text' size='12' required='required' id='secret" . $input_number . "' name='secret' value=" . $lookup['secret'] . "></td>
+    <td width='200' align='center'><input type='text' size='12' required='required' id='ip" . $input_number . "' name='ip' value=" . $lookup['ip'] . "></td>
+    <td width='300' align='center'>";
+    $sql_number = "SELECT number FROM numbers WHERE in_use = 0";
+    $numbers = db_select($sql_number);
+    echo "<select name='number' id='number" . $input_number . "'>
+            <option value=" . $lookup['number'] . ">" . $lookup['number'] . "</option>
+            <option value=''></option>";
+    foreach ($numbers as $number) {
+        echo "<option value=" . $number['number'] . ">" . $number['number'] . "</option>";
+    }
+    echo "</select>";
+
+    echo "<input type='hidden' size='15' id='number_original" . $input_number . "' name='number_original' value=" . $lookup['number'] . "></td>
+    <td><input name='edit' id='edit" . $input_number . "' type='submit' value='Save'></td>
+    <td><input name='delete' id='delete" . $input_number . "' type='submit' value='Delete'></td></tr></form>";
+    $input_number = $input_number + 1;
+}
+echo "</table></div>";
+?>
+<div style="position: absolute; top: 80%" id="editing"></div>
 </body>
 </html>
